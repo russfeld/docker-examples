@@ -41,6 +41,9 @@ services:
       # Notifications via shoutrrr
       # https://containrrr.dev/watchtower/notifications/
       WATCHTOWER_NOTIFICATIONS: shoutrrr
+      # Metrics Token
+      # https://containrrr.dev/watchtower/metrics/
+      WATCHTOWER_HTTP_API_TOKEN: token_here
       # Discord Webhook URL for notifications
       # https://containrrr.dev/shoutrrr/v0.5/services/discord/
       #WATCHTOWER_NOTIFICATION_URL: "discord://discord_token_here"
