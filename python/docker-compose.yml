@@ -1,0 +1,53 @@
+# Services Definition
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md
+services:
+
+  postgres:
+    # ***************************************************************************
+    # Postgres Database
+    #
+    # Relational Database
+    #
+    # Repository:
+    # https://github.com/postgres/postgres
+    container_name: postgres
+
+    # Package Stored on Docker Hub
+    # https://hub.docker.com/_/postgres
+    image: postgres:16-alpine
+
+    # Restart Container Unless Stopped
+    restart: unless-stopped
+
+    # Ports
+    ports:
+      - "5432:5432"
+
+    # Networks
+    #networks:
+      # Internal Database Network
+      #- postgres
+
+    # Storage Volumes
+    #volumes:
+      # Data Directory
+      #- postgres_data:/var/lib/postgresql/data:rw
+
+    # Environment Variables
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+
+    # Health Check
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
