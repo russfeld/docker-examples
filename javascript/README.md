@@ -90,7 +90,7 @@ cd server
 npm run start
 ```
 
-Open web browser and navigate to https://localhost:3000/users to receive this output:
+Open web browser and navigate to http://localhost:3000/users to receive this output:
 
 ```json
 [{"id":1,"name":"Russell Feldhausen","eid":"russfeld"},{"id":2,"name":"Nathan Bean","eid":"nhbean"},{"id":3,"name":"Josh Weese","eid":"weeser"}]
@@ -126,6 +126,16 @@ fetch('http://localhost:3000/users')
 </template>
 ```
 
+Update `build` command in `package.json` to output to server folder:
+
+```js
+"scripts": {
+    "dev": "vite",
+    "build": "vite build --emptyOutDir --outDir ../server/public",
+    "preview": "vite preview"
+  },
+```
+
 Start client:
 
 ```bash
@@ -134,3 +144,22 @@ npm install
 npm run dev
 ```
 
+Open the client at http://localhost:5173 in a webpage to see a list of users like the following:
+
+* Russell Feldhausen (russfeld)
+* Nathan Bean (nhbean)
+* Josh Weese (weeser)
+
+If it works, build the client and restart the server:
+
+```bash
+cd client
+npm run build
+```
+
+```bash
+cd server
+npm run start
+```
+
+You should now be able to visit http://localhost:3000 to see the frontend working correctly. 
