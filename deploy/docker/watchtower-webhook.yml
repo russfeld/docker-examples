@@ -1,0 +1,93 @@
+# Services Definition
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md
+services:
+
+  watchtower-webhook:
+    # ***************************************************************************
+    # Watchtower Webhook
+    #
+    # Updates Docker containers with latest published versions. Runs when triggered
+    # via a webhook ping.
+    #
+    # Published At:
+    # https://watchtower.russfeld.me
+    #
+    # Repository:
+    # https://github.com/containrrr/watchtower
+    container_name: watchtower-webhook
+
+    # Package Stored on Dockerhub
+    # https://hub.docker.com/r/containrrr/watchtower
+    image: containrrr/watchtower
+
+    # Restart Container Unless Stopped
+    restart: unless-stopped
+
+    # Networks
+    networks:
+      # External Network
+      - traefik
+      # Docker Socket Proxy Network
+      - docker-proxy
+
+    # Environment Variables
+    environment:
+      # Monitoring Scope
+      # https://containrrr.dev/watchtower/running-multiple-instances/
+      WATCHTOWER_SCOPE: webhook
+      # Cleanup Old Images
+      # https://containrrr.dev/watchtower/arguments/#cleanup
+      WATCHTOWER_CLEANUP: "true"
+      # Notifications via shoutrrr
+      # https://containrrr.dev/watchtower/notifications/
+      WATCHTOWER_NOTIFICATIONS: shoutrrr
+      # Discord Webhook URL for notifications
+      # https://containrrr.dev/shoutrrr/v0.5/services/discord/
+      #WATCHTOWER_NOTIFICATION_URL: "discord://discord_token_here"
+      # Log Level for Notifications
+      # https://containrrr.dev/watchtower/notifications/
+      #WATCHTOWER_NOTIFICATIONS_LEVEL: info
+      # Docker Host via Docker Socket Proxy
+      # https://containrrr.dev/watchtower/arguments/#docker_host
+      DOCKER_HOST: "tcp://docker-proxy:2375"
+
+    # Startup Command
+    # Enable HTTP API Mode: https://containrrr.dev/watchtower/arguments/#http_api_mode
+    command: --http-api-update
+
+    # Storage Volumes
+    volumes:
+      # Do not allow direct access to Docker socket on exposed host
+      # connect through docker-proxy instead
+      # - /var/run/docker.sock:/var/run/docker.sock
+      #
+      # GitHub Container Authentication
+      # https://docs.docker.com/engine/reference/commandline/login/
+      - /home/russfeld/projects/docker-examples/deploy/config.json:/config.json:ro
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+
+    # Container Labels
+    labels:
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Traefik Labels - see https://doc.traefik.io/traefik/routing/providers/docker/
+      # Traefik Enable
+      - "traefik.enable=true"
+      # Docker Network
+      - "traefik.docker.network=traefik"
+      # Routing Rule
+      - "traefik.http.routers.watchtower-webhook.rule=Host(`watchtower.dev.russfeld.me`)"
+      # Enable TLS
+      - "traefik.http.routers.watchtower-webhook.tls=true"
+      # TLS Certificate Resolver
+      - "traefik.http.routers.watchtower-webhook.tls.certresolver=letsencrypt"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Watchtower Labels - see https://containrrr.dev/watchtower/running-multiple-instances/
+      # Watchtower Scope - Update Daily
+      - "com.centurylinklabs.watchtower.scope=webhook"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # ***************************************************************************

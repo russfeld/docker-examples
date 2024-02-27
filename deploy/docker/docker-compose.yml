@@ -32,25 +32,45 @@ services:
       - docker-proxy
     # ***************************************************************************
 
-
-  #traefik:
+  traefik:
     # ***************************************************************************
     # Traefix Proxy Router
     #
     # Published At:
-    # https://traefik.russfeld.me
+    # https://traefik.dev.russfeld.me
     #
     # Repository:
     # https://github.com/traefik/traefik
-    #extends:
-    #  file: traefik.yml
-    #  service: traefik
+    extends:
+      file: traefik.yml
+      service: traefik
 
     # Startup Dependencies
-    #depends_on:
-    #  - docker-proxy
+    depends_on:
+      - docker-proxy
     # ***************************************************************************
 
+  watchtower-webhook:
+    # ***************************************************************************
+    # Watchtower Webhook
+    #
+    # Updates Docker containers with latest published versions. Runs when triggered
+    # via a webhook ping.
+    #
+    # Published At:
+    # https://watchtower.dev.russfeld.me
+    #
+    # Repository:
+    # https://github.com/containrrr/watchtower
+    extends:
+      file: watchtower-webhook.yml
+      service: watchtower-webhook
+
+    # Startup Dependencies
+    depends_on:
+      - traefik
+      - docker-proxy
+    # ***************************************************************************
 
 networks:
   # External Network Routed by Traefik
