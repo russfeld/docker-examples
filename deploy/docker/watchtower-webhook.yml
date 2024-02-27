@@ -30,6 +30,12 @@ services:
       # Docker Socket Proxy Network
       - docker-proxy
 
+    # Exposed Ports
+    expose:
+      # Watchtower Metrics & API
+      # https://containrrr.dev/watchtower/metrics/
+      - "8080"
+
     # Environment Variables
     environment:
       # Monitoring Scope
