@@ -1,0 +1,62 @@
+# Services Definition
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md
+services:
+
+  docker-proxy:
+    # ***************************************************************************
+    # Docker Socket Proxy
+    #
+    # Proxies requests to the Docker socket to prevent external attacks.
+    #
+    # Repository:
+    # https://github.com/Tecnativa/docker-socket-proxy
+    extends:
+      file: docker-proxy.yml
+      service: docker-proxy
+    # ***************************************************************************
+
+  watchtower-daily:
+    # ***************************************************************************
+    # Watchtower Daily
+    #
+    # Updates Docker containers with latest published versions. Runs once daily.
+    #
+    # Repository:
+    # https://github.com/containrrr/watchtower
+    extends:
+      file: watchtower-daily.yml
+      service: watchtower-daily
+
+    # Startup Dependencies
+    depends_on:
+      - docker-proxy
+    # ***************************************************************************
+
+
+  #traefik:
+    # ***************************************************************************
+    # Traefix Proxy Router
+    #
+    # Published At:
+    # https://traefik.russfeld.me
+    #
+    # Repository:
+    # https://github.com/traefik/traefik
+    #extends:
+    #  file: traefik.yml
+    #  service: traefik
+
+    # Startup Dependencies
+    #depends_on:
+    #  - docker-proxy
+    # ***************************************************************************
+
+
+networks:
+  # External Network Routed by Traefik
+  traefik:
+    name: traefik
+  # Internal Network to Attach to docker-proxy
+  docker-proxy:
+    name: docker-proxy
+    internal: true

@@ -1,0 +1,71 @@
+# Services Definition
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md
+services:
+
+  traefik:
+    # ***************************************************************************
+    # Traefix Proxy Router
+    #
+    # Published At:
+    # https://traefik.russfeld.me
+    #
+    # Repository:
+    # https://github.com/traefik/traefik
+    container_name: traefik
+
+    # Package Stored on Dockerhub
+    # https://hub.docker.com/_/traefik
+    image: traefik:v2.11
+
+    # Restart Container Unless Stopped
+    restart: unless-stopped
+
+    # Port Bindings
+    ports:
+      # Insecure Dashboard (currently disabled)
+      # https://doc.traefik.io/traefik/operations/dashboard/
+      # - "8080:8080"
+      # HTTP
+      - "80:80"
+      # HTTPS
+      - "443:443"
+
+    # Networks
+    networks:
+      # External Network
+      - traefik
+      # Docker Socket Proxy Network
+      - docker-proxy
+
+    # Storage Volumes
+    volumes:
+      # Traefik Static Configuration
+      # https://doc.traefik.io/traefik/reference/static-configuration/file/
+      - /home/russfeld/projects/docker-examples/deploy/symlinks/traefik.yml:/etc/traefik/traefik.yml:ro
+      # Traefik Dynamic Configuration
+      # https://doc.traefik.io/traefik/reference/dynamic-configuration/file/
+      - /home/russfeld/projects/docker-examples/deploy/symlinks/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      # Traefik Certificate Storage
+      # https://doc.traefik.io/traefik/https/acme/
+      # FILE MUST HAVE MODE 600 PERMISSIONS
+      - /home/russfeld/projects/docker-examples/deploy/symlinks/acme.json:/acme.json:rw
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+
+    # Container Labels
+    labels:
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Traefik Labels - see https://doc.traefik.io/traefik/routing/providers/docker/
+      # Disable Traefik Discovery
+      - "traefik.enable=false"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Watchtower Labels - see https://containrrr.dev/watchtower/running-multiple-instances/
+      # Watchtower Scope - Update Daily
+      - "com.centurylinklabs.watchtower.scope=daily"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # ***************************************************************************

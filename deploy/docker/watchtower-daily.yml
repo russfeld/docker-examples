@@ -1,0 +1,81 @@
+# Services Definition
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md
+services:
+
+  watchtower-daily:
+    # ***************************************************************************
+    # Watchtower Daily
+    #
+    # Updates Docker containers with latest published versions. Runs once daily.
+    #
+    # Repository:
+    # https://github.com/containrrr/watchtower
+    container_name: watchtower-daily
+
+    # Package Stored on Dockerhub
+    # https://hub.docker.com/r/containrrr/watchtower
+    image: containrrr/watchtower
+
+    # Restart Container Unless Stopped
+    restart: unless-stopped
+
+    # Networks
+    networks:
+      # Default network to access internet
+      - default
+      # Docker Socket Proxy Network
+      - docker-proxy
+
+    # Environment Variables
+    environment:
+      # Schedule to run daily at 0900 UTC (0300 CST / 0400 CDT)
+      # https://containrrr.dev/watchtower/arguments/#scheduling
+      WATCHTOWER_SCHEDULE: "0 0 9 * * *"
+      # Monitoring Scope
+      # https://containrrr.dev/watchtower/running-multiple-instances/
+      WATCHTOWER_SCOPE: daily
+      # Cleanup Old Images
+      # https://containrrr.dev/watchtower/arguments/#cleanup
+      WATCHTOWER_CLEANUP: "true"
+      # Notifications via shoutrrr
+      # https://containrrr.dev/watchtower/notifications/
+      #WATCHTOWER_NOTIFICATIONS: shoutrrr
+      # Discord Webhook URL for notifications
+      # https://containrrr.dev/shoutrrr/v0.5/services/discord/
+      #WATCHTOWER_NOTIFICATION_URL: "discord://discord_token_here"
+      # Log Level for Notifications
+      # https://containrrr.dev/watchtower/notifications/
+      #WATCHTOWER_NOTIFICATIONS_LEVEL: info
+      # Docker Host
+      # https://containrrr.dev/watchtower/remote-hosts/
+      DOCKER_HOST: tcp://docker-proxy:2375
+
+    # Storage Volumes
+    volumes:
+      # Docker Socket
+      # https://containrrr.dev/watchtower/usage-overview/
+      # Using Proxy above
+      #- /var/run/docker.sock:/var/run/docker.sock:rw
+      # GitHub Container Authentication
+      # https://docs.docker.com/engine/reference/commandline/login/
+      - /home/russfeld/projects/docker-examples/deploy/symlinks/config.json:/config.json:ro
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+
+    # Container Labels
+    labels:
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Traefik Labels - see https://doc.traefik.io/traefik/routing/providers/docker/
+      # Disable Traefik Discovery
+      - "traefik.enable=false"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Watchtower Labels - see https://containrrr.dev/watchtower/running-multiple-instances/
+      # Watchtower Scope - Update Daily
+      - "com.centurylinklabs.watchtower.scope=daily"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # ***************************************************************************

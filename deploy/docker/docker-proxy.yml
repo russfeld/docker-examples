@@ -1,0 +1,97 @@
+# Services Definition
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md
+services:
+
+  docker-proxy:
+    # ***************************************************************************
+    # Docker Socket Proxy
+    #
+    # Proxies requests to the Docker socket to prevent external attacks.
+    #
+    # Repository:
+    # https://github.com/Tecnativa/docker-socket-proxy
+    container_name: docker-proxy
+
+    # Package Stored on GitHub Container Repository
+    # https://github.com/Tecnativa/docker-socket-proxy/pkgs/container/docker-socket-proxy
+    image: ghcr.io/tecnativa/docker-socket-proxy:latest
+
+    # Restart Container Unless Stopped
+    restart: unless-stopped
+
+    # Exposed Ports
+    expose:
+      - "2375"
+
+    # Networks
+    networks:
+      # Docker Socket Proxy Network
+      - docker-proxy
+
+    # Environment Variables
+    environment:
+      # https://github.com/Tecnativa/docker-socket-proxy#grant-or-revoke-access-to-certain-api-sections
+      # Configuration from Reddit: https://www.reddit.com/r/docker/comments/l2lf3z/docker_socket_proxy_not_woking/
+
+      ## ** Variables match the URL prefix **
+      # 0 to revoke access.
+      # 1 to grant access.
+      ## Granted by Default
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      ## Revoked by Default
+      # Security critical
+      - AUTH=0
+      - SECRETS=0
+      - POST=1 # Watchtower
+      - DELETE=1 # Watchtower
+      # GET Options
+      - BUILD=0
+      - COMMIT=0
+      - CONFIGS=0
+      - CONTAINERS=1 # Traefik, portainer, etc.
+      - DISTRIBUTION=0
+      - EXEC=0
+      - IMAGES=1 # Portainer, Watchtower
+      - INFO=1 # Portainer
+      - NETWORKS=1 # Portainer, Watchtower
+      - NODES=0
+      - PLUGINS=0
+      - SERVICES=1 # Portainer
+      - SESSION=0
+      - SWARM=0
+      - SYSTEM=0
+      - TASKS=1 # Portainer
+      - VOLUMES=1 # Portainer
+      # POST Options
+      - CONTAINERS_CREATE=1 # Watchtower
+      - CONTAINERS_START=1 # Watchtower
+      - CONTAINERS_UPDATE=1 # Watchtower
+      # DELETE Options
+      - CONTAINERS_DELETE=1 # Watchtower
+      - IMAGES_DELETE=1 # Watchtower
+
+    # Storage Volumes
+    volumes:
+      # Docker Socket
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+
+    labels:
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Traefik Labels - see https://doc.traefik.io/traefik/routing/providers/docker/
+      # Disable Traefik Discovery
+      - "traefik.enable=false"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Watchtower Labels - see https://containrrr.dev/watchtower/running-multiple-instances/
+      # Watchtower Scope - Update Daily
+      - "com.centurylinklabs.watchtower.scope=daily"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # ***************************************************************************

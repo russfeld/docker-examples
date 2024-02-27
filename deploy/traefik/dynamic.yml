@@ -1,0 +1,13 @@
+http:
+  routers:
+    dashboard:
+      rule: "Host(`traefik.dev.russfeld.me`)"
+      service: api@internal
+      middlewares:
+        - "auth"
+  middlewares:
+    auth:
+      basicAuth:
+         users:
+         # russfeld : password
+           - "russfeld:$apr1$AZBHvt2y$HUdf25juRHPJtMsh6e4tJ/"
