@@ -6,7 +6,7 @@ services:
     # ***************************************************************************
     # Postgres Database
     #
-    # Relational Databse
+    # Relational Database
     #
     # Repository:
     # https://github.com/postgres/postgres

@@ -72,6 +72,18 @@ services:
       - docker-proxy
     # ***************************************************************************
 
+  db:
+    # ***************************************************************************
+    # Postgres Database
+    #
+    # Relational Database
+    #
+    # Repository:
+    # https://github.com/postgres/postgres
+    extends:
+      file: db.yml
+      service: db
+
   js-docker:
     # ***************************************************************************
     # JS Docker Example
