@@ -72,6 +72,44 @@ services:
       - docker-proxy
     # ***************************************************************************
 
+  js-docker:
+    # ***************************************************************************
+    # JS Docker Example
+    #
+    # Published At:
+    # https://js.dev.russfeld.me
+    #
+    # Repository:
+    # https://github.com/russfeld/docker-examples
+    extends:
+      file: js-docker.yml
+      service: js-docker
+
+    # Startup Dependencies
+    depends_on:
+      - traefik
+      - db
+    # ***************************************************************************
+
+  py-docker:
+    # ***************************************************************************
+    # JS Docker Example
+    #
+    # Published At:
+    # https://py.dev.russfeld.me
+    #
+    # Repository:
+    # https://github.com/russfeld/docker-examples
+    extends:
+      file: py-docker.yml
+      service: py-docker
+
+    # Startup Dependencies
+    depends_on:
+      - traefik
+      - db
+    # ***************************************************************************
+
 networks:
   # External Network Routed by Traefik
   traefik:
@@ -79,4 +117,10 @@ networks:
   # Internal Network to Attach to docker-proxy
   docker-proxy:
     name: docker-proxy
-    internal: true
+    internal: 
+  postgres:
+    name: postgres
+    internal:
+
+volumes:
+  postgres_data:

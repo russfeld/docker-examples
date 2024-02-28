@@ -1,0 +1,57 @@
+# Services Definition
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md
+services:
+
+  js-docker:
+    # ***************************************************************************
+    # JS Docker Example
+    #
+    # Published At:
+    # https://js.dev.russfeld.me
+    #
+    # Repository:
+    # https://github.com/russfeld/docker-examples
+    container_name: js-docker
+
+    # Package Stored on GHCR
+    # https://github.com/russfeld/docker-examples/pkgs/container/js-docker
+    image: ghcr.io/russfeld/js-docker:latest
+
+    # Restart Container Unless Stopped
+    restart: unless-stopped
+
+    # Networks
+    networks:
+      # External Network
+      - traefik
+
+    # Exposed Ports
+    expose:
+      - "3000"
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+
+    # Container Labels
+    labels:
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Traefik Labels - see https://doc.traefik.io/traefik/routing/providers/docker/
+      # Traefik Enable
+      - "traefik.enable=true"
+      # Docker Network
+      - "traefik.docker.network=traefik"
+      # Routing Rule
+      - "traefik.http.routers.js-docker.rule=Host(`js.dev.russfeld.me`)"
+      # Enable TLS
+      - "traefik.http.routers.js-docker.tls=true"
+      # TLS Certificate Resolver
+      - "traefik.http.routers.js-docker.tls.certresolver=letsencrypt"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Watchtower Labels - see https://containrrr.dev/watchtower/running-multiple-instances/
+      # Watchtower Scope - Update Daily
+      - "com.centurylinklabs.watchtower.scope=webhook"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # ***************************************************************************

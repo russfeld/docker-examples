@@ -1,0 +1,59 @@
+# Services Definition
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md
+services:
+
+  py-docker:
+    # ***************************************************************************
+    # PY Docker Example
+    #
+    # Published At:
+    # https://py.dev.russfeld.me
+    #
+    # Repository:
+    # https://github.com/russfeld/docker-examples
+    container_name: py-docker
+
+    # Package Stored on GHCR
+    # https://github.com/russfeld/docker-examples/pkgs/container/py-docker
+    image: ghcr.io/russfeld/py-docker:latest
+
+    # Restart Container Unless Stopped
+    restart: unless-stopped
+
+    # Networks
+    networks:
+      # Internal Database Network
+      - postgres
+      # External Network
+      - traefik
+
+    # Exposed Ports
+    expose:
+      - "5001"
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+
+    # Container Labels
+    labels:
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Traefik Labels - see https://doc.traefik.io/traefik/routing/providers/docker/
+      # Traefik Enable
+      - "traefik.enable=true"
+      # Docker Network
+      - "traefik.docker.network=traefik"
+      # Routing Rule
+      - "traefik.http.routers.py-docker.rule=Host(`py.dev.russfeld.me`)"
+      # Enable TLS
+      - "traefik.http.routers.py-docker.tls=true"
+      # TLS Certificate Resolver
+      - "traefik.http.routers.py-docker.tls.certresolver=letsencrypt"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      # Watchtower Labels - see https://containrrr.dev/watchtower/running-multiple-instances/
+      # Watchtower Scope - Update Daily
+      - "com.centurylinklabs.watchtower.scope=webhook"
+      # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # ***************************************************************************
