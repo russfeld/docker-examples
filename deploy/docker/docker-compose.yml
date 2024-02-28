@@ -117,10 +117,10 @@ networks:
   # Internal Network to Attach to docker-proxy
   docker-proxy:
     name: docker-proxy
-    internal: 
+    internal: true
   postgres:
     name: postgres
-    internal:
+    internal: true
 
 volumes:
   postgres_data:

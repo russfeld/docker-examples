@@ -22,6 +22,8 @@ services:
 
     # Networks
     networks:
+      # Internal Database Network
+      - postgres
       # External Network
       - traefik
 
