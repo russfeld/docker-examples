@@ -1,0 +1,88 @@
+# Build Node Workflow
+#
+# Based on Starter Workflow Here
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+# Workflow name
+name: Build Node
+
+# Run only on pushes and pull requests on main branch, as well as tags
+# https://docs.github.com/en/actions/using-workflows/triggering-a-workflow
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches:
+      - main
+
+# Define a single job named build
+jobs:
+  build:
+    # Run job on Ubuntu runner
+    runs-on: ubuntu-latest
+
+    # Give all permissions
+    permissions: write-all
+
+    # Job Steps
+    steps:
+      # Step 1 - Checkout the Repository
+      # https://github.com/actions/checkout
+      - name: 1 - Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      # Step 2 - Log In to GitHub Container Registry
+      # https://github.com/docker/login-action
+      - name: 2 - Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 3 - Build and Push Docker Image
+      # https://github.com/docker/build-push-action
+      - name: 3 - Build and Push Docker Image
+        uses: docker/build-push-action@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          context: ./js-docker/server
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/js-docker:latest
+
+      # Step 4 - Make Release on GitHub
+      # https://github.com/softprops/action-gh-release
+      - name: 4 - Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          generate_release_notes: true
+
+      # Step 5 - Notify Discord for Deploy
+      # - name: Discord Deploy
+      #   env:
+      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      #   uses: Ilshidur/action-discord@master
+      #   with:
+      #     args: "js-docker Build Complete! Starting Deploy..."
+
+      # Step 6 - Deploy App
+      - name: 6 - Deploy Stage
+        id: request
+        uses: fjogeleit/http-request-action@master
+        with:
+          url: 'https://watchtower.dev.russfeld.me/v1/update'
+          method: 'GET'
+          bearerToken: ${{ secrets.DEPLOY_TOKEN }}
+          timeout: 600000
+
+      # Step 7 - Show Response
+      - name: Show Response
+        run: echo ${{ steps.request.outputs.response }}
