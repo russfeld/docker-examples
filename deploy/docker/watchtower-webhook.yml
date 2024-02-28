@@ -72,7 +72,7 @@ services:
       #
       # GitHub Container Authentication
       # https://docs.docker.com/engine/reference/commandline/login/
-      - /home/russfeld/projects/docker-examples/deploy/config.json:/config.json:ro
+      - /home/russfeld/projects/docker-examples/deploy/symlinks/config.json:/config.json:ro
 
     # Logging
     logging:
