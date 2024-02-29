@@ -127,7 +127,7 @@ Start client:
 
 ```bash
 cd client
-npm install
+npm install 
 npm run dev
 ```
 
