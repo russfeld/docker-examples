@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const pgp = require('pg-promise')(/* options */)
-const db = pgp('postgres://postgres:postgres@db:5432/postgres')
+const db = pgp('postgres://postgres:postgres@postgres:5432/postgres')
 
 
 /* GET users listing. */
