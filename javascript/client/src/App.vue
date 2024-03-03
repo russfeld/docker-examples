@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 const users = ref(null);
-fetch('http://localhost:3000/users')
+fetch('/users')
     .then(response => response.json())
     .then(data => users.value = data);
 </script>

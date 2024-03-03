@@ -1,6 +1,6 @@
 ## Symlinks
 
-This folder should contain symlinks to various other configurations
+This folder should contain symlinks to various other configurations. Symlinks allow editing the configuration file outside the container without breaking the volume (for containers that support live reloading of configuration). 
 
 ### Docker Authentication for Watchtower
 

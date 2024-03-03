@@ -52,7 +52,7 @@ jobs:
         uses: docker/build-push-action@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          context: ./js-docker/server
+          context: ./js-docker/
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/js-docker:latest
@@ -73,16 +73,16 @@ jobs:
       #   with:
       #     args: "js-docker Build Complete! Starting Deploy..."
 
-      # Step 6 - Deploy App
-      - name: 6 - Deploy Stage
-        id: request
-        uses: fjogeleit/http-request-action@master
-        with:
-          url: 'https://watchtower.dev.russfeld.me/v1/update'
-          method: 'GET'
-          bearerToken: ${{ secrets.DEPLOY_TOKEN }}
-          timeout: 600000
+      # # Step 6 - Deploy App
+      # - name: 6 - Deploy Stage
+      #   id: request
+      #   uses: fjogeleit/http-request-action@master
+      #   with:
+      #     url: 'https://watchtower.dev.russfeld.me/v1/update'
+      #     method: 'GET'
+      #     bearerToken: ${{ secrets.DEPLOY_TOKEN }}
+      #     timeout: 600000
 
-      # Step 7 - Show Response
-      - name: Show Response
-        run: echo ${{ steps.request.outputs.response }}
+      # # Step 7 - Show Response
+      # - name: Show Response
+      #   run: echo ${{ steps.request.outputs.response }}
